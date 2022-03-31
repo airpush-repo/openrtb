@@ -19,6 +19,7 @@ type Content struct {
 	ISRC               string            `json:"isrc,omitempty"`               // International Standard Recording Code conforming to ISO - 3901.
 	Producer           *Producer         `json:"producer,omitempty"`           // The producer.
 	URL                string            `json:"url,omitempty"`                // URL of the content, for buy-side contextualization or review.
+	CategoryTax        *CategoryTaxonomy `json:"cattax,omitempty"`             // The taxonomy in use for bcat.
 	Categories         []ContentCategory `json:"cat,omitempty"`                // Array of IAB content categories that describe the content.
 	ProductionQuality  ProductionQuality `json:"prodq,omitempty"`              // Production quality per IAB's classification.
 	VideoQuality       ProductionQuality `json:"videoquality,omitempty"`       // DEPRECATED. Video quality per IAB's classification.
@@ -32,6 +33,16 @@ type Content struct {
 	Length             int               `json:"len,omitempty"`                // Length of content in seconds; appropriate for video or audio.
 	Language           string            `json:"language,omitempty"`           // Content language using ISO-639-1-alpha-2.
 	Embeddable         int               `json:"embeddable,omitempty"`         // Indicator of whether or not the content is embeddable (e.g., an embeddable video player), where 0 = no, 1 = yes.
-	Data               []Data            `json:"data,omitempty"`               // Additional content data.
+	Network            Network           `json:"network,omitempty"`
+	Channel            Channel           `json:"channel,omitempty"`
+	Data               []Data            `json:"data,omitempty"` // Additional content data.
 	Ext                json.RawMessage   `json:"ext,omitempty"`
+}
+
+// GetCategoryTax returns the cattax value
+func (c *Content) GetCategoryTax() CategoryTaxonomy {
+	if c.CategoryTax != nil {
+		return *c.CategoryTax
+	}
+	return 1
 }

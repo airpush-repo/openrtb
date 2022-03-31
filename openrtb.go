@@ -499,6 +499,10 @@ const (
 	APIFrameworkMRAID1  APIFramework = 3
 	APIFrameworkORMMA   APIFramework = 4
 	APIFrameworkMRAID2  APIFramework = 5
+	APIFrameworkMRAID3  APIFramework = 6
+	APIFrameworkOMID    APIFramework = 7
+	APIFrameworkSIMID1  APIFramework = 8
+	APIFrameworkSIMID11 APIFramework = 9
 )
 
 // VideoLinearity as defined in section 5.7.
@@ -597,6 +601,17 @@ const (
 	ContentDeliveryStreaming   ContentDelivery = 1
 	ContentDeliveryProgressive ContentDelivery = 2
 	ContentDeliveryDownload    ContentDelivery = 3
+)
+
+// PlaybackCessationMode as defined in section 5.11.
+type PlaybackCessationMode int
+
+// 5.15 Content Delivery Methods
+const (
+	PlaybackCessationModeUnknown                 PlaybackCessationMode = 0
+	PlaybackCessationModeVideoCompletion         PlaybackCessationMode = 1
+	PlaybackCessationModeLeavingViewport         PlaybackCessationMode = 2
+	PlaybackCessationModeLeavingViewportFloating PlaybackCessationMode = 3
 )
 
 // FeedType as defined in section 5.16.
@@ -732,6 +747,20 @@ const (
 	NBRUnmatchedUser     NBR = 8
 )
 
+// CategoryTaxonomy options for taxonomies that can be used to describe content, audience, and ad creative categories
+type CategoryTaxonomy int
+
+// 5.24 No-Bid Reason Codes
+const (
+	CategoryTaxonomyUnknown                    CategoryTaxonomy = 0
+	CategoryTaxonomyIABTechLabContentCategory1 CategoryTaxonomy = 1
+	CategoryTaxonomyIABTechLabContentCategory2 CategoryTaxonomy = 2
+	CategoryTaxonomyIABTechLabAdProduct        CategoryTaxonomy = 3
+	CategoryTaxonomyIABTechLabAudience         CategoryTaxonomy = 4
+	CategoryTaxonomyIABTechLabContent1         CategoryTaxonomy = 5
+	CategoryTaxonomyIABTechLabContent2         CategoryTaxonomy = 6
+)
+
 /*************************************************************************
  * COMMON OBJECT STRUCTS
  *************************************************************************/
@@ -746,11 +775,20 @@ const (
 
 // ThirdParty abstract attributes.
 type ThirdParty struct {
-	ID         string            `json:"id,omitempty"`
-	Name       string            `json:"name,omitempty"`
-	Categories []ContentCategory `json:"cat,omitempty"` // Array of IAB content categories
-	Domain     string            `json:"domain,omitempty"`
-	Ext        json.RawMessage   `json:"ext,omitempty"`
+	ID          string            `json:"id,omitempty"`
+	Name        string            `json:"name,omitempty"`
+	CategoryTax *CategoryTaxonomy `json:"cattax,omitempty"` // The taxonomy in use for bcat.
+	Categories  []ContentCategory `json:"cat,omitempty"`    // Array of IAB content categories
+	Domain      string            `json:"domain,omitempty"`
+	Ext         json.RawMessage   `json:"ext,omitempty"`
+}
+
+// GetCategoryTax returns the cattax value
+func (p *ThirdParty) GetCategoryTax() CategoryTaxonomy {
+	if p.CategoryTax != nil {
+		return *p.CategoryTax
+	}
+	return 1
 }
 
 // Publisher object itself and all of its parameters are optional, so default values are not
@@ -798,6 +836,7 @@ type User struct {
 	CustomData  string          `json:"customdata,omitempty"` // Optional feature to pass bidder data that was set in the exchange's cookie. The string must be in base85 cookie safe characters and be in any format. Proper JSON encoding must be used to include "escaped" quotation marks.
 	Geo         *Geo            `json:"geo,omitempty"`
 	Data        []Data          `json:"data,omitempty"`
+	EIDs        []EID           `json:"eids,omitempty"`
 	Ext         json.RawMessage `json:"ext,omitempty"`
 }
 
@@ -822,6 +861,26 @@ type Segment struct {
 	Ext   json.RawMessage `json:"ext,omitempty"`
 }
 
+// EID - Extended identifiers support in the OpenRTB specification allows buyers to use audience data in real-time
+// bidding. The exchange should ensure that business agreements allow for the sending of this data. Note, it is
+// assumed that exchanges and DSPs will collaborate with the appropriate regulatory agencies and ID
+// vendor(s) to ensure compliance.
+type EID struct {
+	Source string          `json:"source,omitempty"` // Source or technology provider responsible for the set of included IDs. Expressed as a top-level domain.
+	UIDs   []UID           `json:"uids,omitempty"`   // Array of extended ID UID objects from the given source.
+	Ext    json.RawMessage `json:"ext,omitempty"`
+}
+
+// UID - Extended identifiers UIDs support in the OpenRTB specification allows buyers to use audience data in realtime bidding.
+// The exchange should ensure that business agreements allow for the sending of this data.
+// Note, it is assumed that exchanges and DSPs will collaborate with the appropriate regulatory agencies and
+// ID vendor(s) to ensure compliance.
+type UID struct {
+	ID        string          `json:"id,omitempty"`    // Cookie or platform-native identifier.
+	AgentType int             `json:"atype,omitempty"` // Type of user agent the match is from.
+	Ext       json.RawMessage `json:"ext,omitempty"`
+}
+
 // Regulations object contains any legal, governmental, or industry regulations that apply to the request. The
 // coppa flag signals whether or not the request falls under the United States Federal Trade Commission's
 // regulations for the United States Children's Online Privacy Protection Act ("COPPA").
@@ -833,7 +892,10 @@ type Regulations struct {
 // Format object represents an allowed size (i.e., height and width combination) for a banner impression.
 // These are typically used in an array for an impression where multiple sizes are permitted.
 type Format struct {
-	Width  int             `json:"w,omitempty"` // Width in device independent pixels (DIPS).
-	Height int             `json:"h,omitempty"` //Height in device independent pixels (DIPS).
+	Width  int             `json:"w,omitempty"`      // Width in device independent pixels (DIPS).
+	Height int             `json:"h,omitempty"`      //Height in device independent pixels (DIPS).
+	WRatio int             `json:"wratio,omitempty"` // Relative width when expressing size as a ratio
+	HRatio int             `json:"hratio,omitempty"` // Relative height when expressing size as a ratio.
+	WMin   int             `json:"wmin,omitempty"`   // The minimum width in device independent pixels (DIPS) at which the ad will be displayed the size is expressed as a ratio.
 	Ext    json.RawMessage `json:"ext,omitempty"`
 }

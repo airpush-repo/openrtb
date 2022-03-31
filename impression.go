@@ -19,7 +19,8 @@ var (
 // The presence of Banner, Video, and/or Native objects
 // subordinate to the Imp object indicates the type of impression being offered.
 type Impression struct {
-	ID                    string          `json:"id"` // A unique identifier for this impression
+	ID                    string          `json:"id"`               // A unique identifier for this impression
+	Metric                []Metric        `json:"metric,omitempty"` // An array of Metric object
 	Banner                *Banner         `json:"banner,omitempty"`
 	Video                 *Video          `json:"video,omitempty"`
 	Audio                 *Audio          `json:"audio,omitempty"`
@@ -31,9 +32,12 @@ type Impression struct {
 	TagID                 string          `json:"tagid,omitempty"`             // IDentifier for specific ad placement or ad tag
 	BidFloor              float64         `json:"bidfloor,omitempty"`          // Bid floor for this impression in CPM
 	BidFloorCurrency      string          `json:"bidfloorcur,omitempty"`       // Currency of bid floor
+	ClickBrowser          int             `json:"clickbrowser,omitempty"`      //Indicates the type of browser opened upon clicking the creative in an app, where 0 = embedded, 1 = native. Note that the Safari View Controller in iOS 9.x devices is considered a native browser for purposes of this attribute.
 	Secure                NumberOrString  `json:"secure,omitempty"`            // Flag to indicate whether the impression requires secure HTTPS URL creative assets and markup.
 	Exp                   int             `json:"exp,omitempty"`               // Advisory as to the number of seconds that may elapse between the auction and the actual impression.
 	IFrameBusters         []string        `json:"iframebuster,omitempty"`      // Array of names for supportediframe busters.
+	Reward                int             `json:"reward,omitempty"`            // Indicates if this is a rewarded placement, where 0 = no, 1 = yes.
+	ServerSideAdInsertion int             `json:"ssai,omitempty"`              // Indicates if server-side ad insertion (e.g., stitching an ad into an audio or video stream) is in use and the impact of this on asset and tracker retrieval.
 	Ext                   json.RawMessage `json:"ext,omitempty"`
 }
 

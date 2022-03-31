@@ -30,18 +30,28 @@ func (a *Inventory) GetPrivacyPolicy() int {
 // "site" object.
 type App struct {
 	Inventory
-	Bundle   string `json:"bundle,omitempty"`   // App bundle or package name
-	StoreURL string `json:"storeurl,omitempty"` // App store URL for an installed app
-	Version  string `json:"ver,omitempty"`      // App version
-	Paid     int    `json:"paid,omitempty"`     // "1": Paid, "2": Free
+	CategoryTax *CategoryTaxonomy `json:"cattax,omitempty"`   // The taxonomy in use for bcat.
+	Bundle      string            `json:"bundle,omitempty"`   // App bundle or package name
+	StoreURL    string            `json:"storeurl,omitempty"` // App store URL for an installed app
+	Version     string            `json:"ver,omitempty"`      // App version
+	Paid        int               `json:"paid,omitempty"`     // "1": Paid, "2": Free
+}
+
+// GetCategoryTax returns the cattax value
+func (a *App) GetCategoryTax() CategoryTaxonomy {
+	if a.CategoryTax != nil {
+		return *a.CategoryTax
+	}
+	return 1
 }
 
 // Site object should be included if the ad supported content is part of a website (as opposed to
 // an application).  A bid request must not contain both a site object and an app object.
 type Site struct {
 	Inventory
-	Page     string `json:"page,omitempty"`   // URL of the page
-	Referrer string `json:"ref,omitempty"`    // Referrer URL
-	Search   string `json:"search,omitempty"` // Search string that caused naviation
-	Mobile   int    `json:"mobile,omitempty"` // Mobile ("1": site is mobile optimised)
+	CategoryTax CategoryTaxonomy `json:"cattax,omitempty"` // The taxonomy in use for bcat.
+	Page        string           `json:"page,omitempty"`   // URL of the page
+	Referrer    string           `json:"ref,omitempty"`    // Referrer URL
+	Search      string           `json:"search,omitempty"` // Search string that caused naviation
+	Mobile      int              `json:"mobile,omitempty"` // Mobile ("1": site is mobile optimised)
 }
