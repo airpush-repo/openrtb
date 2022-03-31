@@ -34,9 +34,11 @@ type Bid struct {
 	CampaignID  StringOrNumber      `json:"cid,omitempty"`            // Campaign ID that appears with the Ad markup.
 	CreativeID  string              `json:"crid,omitempty"`           // Creative ID for reporting content issues or defects. This could also be used as a reference to a creative ID that is posted with an exchange.
 	Tactic      string              `json:"tactic,omitempty"`         // Tactic ID to enable buyers to label bids for reporting to the exchange the tactic through which their bid was submitted.
+	CategoryTax *CategoryTaxonomy   `json:"cattax,omitempty"`         // The taxonomy in use for bcat.
 	Categories  []ContentCategory   `json:"cat,omitempty"`            // IAB content categories of the creative. Refer to List 5.1
 	Attrs       []CreativeAttribute `json:"attr,omitempty"`           // Array of creative attributes.
 	API         APIFramework        `json:"api,omitempty"`            // API required by the markup if applicable
+	APIs        []APIFramework      `json:"apis,omitempty"`           // List of supported APIs for the markup.
 	Protocol    Protocol            `json:"protocol,omitempty"`       // Video response protocol of the markup if applicable
 	MediaRating IQGRating           `json:"qagmediarating,omitempty"` // Creative media rating per IQG guidelines.
 	Language    string              `json:"language,omitempty"`       // Language of the creative using ISO-639-1-alpha-2.
@@ -46,6 +48,8 @@ type Bid struct {
 	WidthRatio  int                 `json:"wratio,omitempty"`         // Relative width of the creative when expressing size as a ratio.
 	HeightRatio int                 `json:"hratio,omitempty"`         // Relative height of the creative when expressing size as a ratio.
 	Exp         int                 `json:"exp,omitempty"`            // Advisory as to the number of seconds the bidder is willing to wait between the auction and the actual impression.
+	SlotInPod   int                 `json:"slotinpod,omitempty"`      // Indicates that the bid response is only eligible for a specific position within a video or audio ad pod.
+	MarkupType  int                 `json:"mtype,omitempty"`          // Type of the creative markup so that it can properly be associated with the right sub-object of the BidRequest.Imp.
 	Ext         json.RawMessage     `json:"ext,omitempty"`
 }
 
@@ -58,4 +62,12 @@ func (bid *Bid) Validate() error {
 	}
 
 	return nil
+}
+
+// GetCategoryTax returns the cattax value
+func (bid *Bid) GetCategoryTax() CategoryTaxonomy {
+	if bid.CategoryTax != nil {
+		return *bid.CategoryTax
+	}
+	return 1
 }

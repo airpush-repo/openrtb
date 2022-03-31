@@ -31,6 +31,7 @@ type BidRequest struct {
 	AllImpressions    int               `json:"allimps,omitempty"` // Flag to indicate whether exchange can verify that all impressions offered represent all of the impressions available in context, Default: 0
 	Currencies        []string          `json:"cur,omitempty"`     // Array of allowed currencies
 	BlockedCategories []ContentCategory `json:"bcat,omitempty"`    // Blocked Advertiser Categories.
+	CategoryTax       *CategoryTaxonomy `json:"cattax,omitempty"`  // The taxonomy in use for bcat.
 	BlockedAdvDomains []string          `json:"badv,omitempty"`    // Array of strings of blocked toplevel domains of advertisers
 	BlockedApps       []string          `json:"bapp,omitempty"`    // Block list of applications by their platform-specific exchange-independent application identifiers. On Android, these should be bundle or package names (e.g., com.foo.mygame).  On iOS, these are numeric IDs.
 	Source            *Source           `json:"source,omitempty"`  // A Source object that provides data about the inventory source and which entity makes the final decision
@@ -56,4 +57,12 @@ func (req *BidRequest) Validate() error {
 	}
 
 	return nil
+}
+
+// GetCategoryTax returns the cattax value
+func (req *BidRequest) GetCategoryTax() CategoryTaxonomy {
+	if req.CategoryTax != nil {
+		return *req.CategoryTax
+	}
+	return 1
 }

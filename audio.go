@@ -26,10 +26,15 @@ type Audio struct {
 	CompanionAds   []Banner            `json:"companionad,omitempty"`
 	APIs           []APIFramework      `json:"api,omitempty"`
 	CompanionTypes []CompanionType     `json:"companiontype,omitempty"`
-	MaxSequence    int                 `json:"maxseq,omitempty"`   // The maximumnumber of ads that canbe played in an ad pod.
-	Feed           FeedType            `json:"feed,omitempty"`     // Type of audio feed.
-	Stitched       int                 `json:"stitched,omitempty"` // Indicates if the ad is stitched with audio content or delivered independently
-	VolumeNorm     VolumeNorm          `json:"nvol,omitempty"`     // Volume normalization mode.
+	MaxSequence    int                 `json:"maxseq,omitempty"`       // The maximumnumber of ads that canbe played in an ad pod.
+	Feed           FeedType            `json:"feed,omitempty"`         // Type of audio feed.
+	Stitched       int                 `json:"stitched,omitempty"`     // Indicates if the ad is stitched with audio content or delivered independently
+	VolumeNorm     VolumeNorm          `json:"nvol,omitempty"`         // Volume normalization mode.
+	PodDuration    int                 `json:"poddur,omitempty"`       // Indicates the total amount of time in seconds that advertisers may fill for a “dynamic” video ad pod.
+	PodID          int                 `json:"podid,omitempty"`        // Unique identifier indicating that an impression opportunity belongs to a video ad pod.
+	PodSequence    int                 `json:"podseq,omitempty"`       // The sequence (position) of the audio ad pod within a content stream.
+	MinCPMPerSec   float64             `json:"mincpmpersec,omitempty"` // Minimum CPM per second.
+	SlotInPod      int                 `json:"slotinpod,omitempty"`    // For audio ad pods, this value indicates that the seller can guarantee delivery against the indicated sequence.
 	Ext            json.RawMessage     `json:"ext,omitempty"`
 }
 
